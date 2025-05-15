@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Cancer Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Skin Cancer Detection</h1>
+        <p>Upload a skin lesion image to determine if it is benign or malignant.</p>
+        
+        <form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data">
+            <div id="drop-area">
+                <p id="drop-message">Drag and Drop your image here or</p>
+                <input type="file" id="fileElem" name="file" accept="image/*" required>
+                <label class="btn" for="fileElem">Choose File</label>
+                <p id="file-name"></p> <!-- Shows the file name -->
+            </div>
+            <button type="submit">Upload Image</button>
+        </form>
+    </div>
+
+    <script>
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('fileElem');
+        const fileNameDisplay = document.getElementById('file-name');
+
+        // Function to update file name display
+        function updateFileName(file) {
+            if (file) {
+                fileNameDisplay.textContent = `Selected file: ${file.name}`;
+            } else {
+                fileNameDisplay.textContent = '';
+            }
+        }
+
+        // When file is selected using "Choose File"
+        fileInput.addEventListener('change', (e) => {
+            const file = fileInput.files[0];
+            updateFileName(file);
+        });
+
+        // Prevent default drag and drop behavior
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Highlight drop area when dragging files
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.add('highlight'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.remove('highlight'), false);
+        });
+
+        // Handle file drop
+        dropArea.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            fileInput.files = files; // Assign files to file input
+            updateFileName(files[0]); // Show the first file name
+        });
+    </script>
+</body>
+</html>
